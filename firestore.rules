@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && exists(/databases/$(db)/documents/admins/$(request.auth.uid)); }
+
+    match /admins/{u} { allow read: if signedIn() && request.auth.uid == u; }
+
+    match /tournaments/{t} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['filled'])
+        && request.resource.data.filled == resource.data.filled + 1
+        && request.resource.data.filled <= resource.data.cap);
+      match /private/{d} {
+        allow write: if isAdmin();
+        allow read: if isAdmin() || (signedIn()
+          && exists(/databases/$(db)/documents/registrations/$(t + '_' + request.auth.uid)));
+      }
+    }
+
+    match /fcmTokens/{u} { allow read, write: if signedIn() && request.auth.uid == u; }
+
+    match /registrations/{r} {
+      // Create: user submits their own registration (with payment fields)
+      allow create: if signedIn() && request.auth.token.email_verified == true
+        && request.resource.data.uid == request.auth.uid
+        && r == request.resource.data.tid + '_' + request.auth.uid
+        && request.resource.data.keys().hasOnly([
+             'tid','uid','ign','gid','contact','platform','createdAt',
+             'entryFee','payStatus','utr','paidAmt'
+           ]);
+      // Admin can update payStatus (approve / reject)
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payStatus']);
+      // Read & delete: owner or admin
+      allow read, delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+  }
+}

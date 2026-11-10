@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2a0f4d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <title>FireArena – Free Fire Tournaments</title>
+  <style>
+    :root {
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      --ac: #8e3bb8; --ink: #1b1b1f; --mu: #6b6b76; --bd: #e6dcef; --dk: #1d0a3a
+    }
+    * { box-sizing: border-box }
+    body {
+      margin: 0; min-height: 100vh; color: #fff;
+      background: linear-gradient(180deg,#1a0838 0%,#3b1670 55%,#b44fc0 100%) fixed;
+      font: 16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif
+    }
+    header {
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 10px; padding: 14px 20px;
+      max-width: 1000px; margin: auto
+    }
+    .logo { font-weight: 800; font-size: 20px }
+    .logo span { color: #ffb347 }
+    .seg {
+      display: flex; background: #150a30; border: 1px solid #ffffff30;
+      border-radius: 999px; padding: 4px; box-shadow: 0 0 18px #8e3bb855
+    }
+    .seg button {
+      border: 0; background: none; color: #d9c6f0;
+      padding: 9px 18px; border-radius: 999px; font: 600 14px inherit; cursor: pointer
+    }
+    .seg button.on { background: #6a2aa8; color: #fff }
+    .ubtn {
+      border: 1px solid #ffffff40; background: #150a30; color: #fff;
+      padding: 8px 14px; border-radius: 999px; font: 600 14px inherit;
+      cursor: pointer; max-width: 170px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap
+    }
+    main { max-width: 1000px; margin: auto; padding: 0 20px 110px }
+    .sbar { display: flex; margin: 6px 0 18px }
+    .sbar .seg { width: 100% }
+    .sbar button { flex: 1 }
+    nav { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px }
+    nav button {
+      border: 1px solid #ffffff40; background: #150a3099; color: #fff;
+      padding: 8px 14px; border-radius: 10px; font: 600 14px inherit;
+      cursor: pointer; white-space: nowrap
+    }
+    nav button.on { background: #fff; color: var(--ac) }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)) }
+    .mc, .card {
+      background: #fff; color: var(--ink); border-radius: 18px;
+      padding: 16px; box-shadow: 0 6px 24px #0004
+    }
+    .card h3 { margin: 0 0 6px }
+    .mh { display: flex; align-items: center; gap: 10px; margin-bottom: 12px }
+    .ic {
+      width: 46px; height: 46px; border-radius: 50%; background: #2a0f4d;
+      display: grid; place-items: center; font-size: 24px; flex: none
+    }
+    .mt { flex: 1; text-align: center }
+    .mt b { display: block; font-size: 15px; line-height: 1.25 }
+    .mt small { color: var(--mu) }
+    .mh a { color: var(--ink); font-weight: 600; text-decoration: underline }
+    .chips { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px 8px }
+    .chips span {
+      display: block; background: var(--ac); color: #f1e1fb;
+      text-align: center; padding: 8px 2px; border-radius: 10px; font-size: 12px
+    }
+    .chips b { display: block; text-align: center; margin: 4px 0 6px; font-size: 15px }
+    .fr { color: #16a34a }
+    .mf { display: flex; align-items: center; gap: 12px; margin-top: 8px }
+    .pb {
+      flex: 1; height: 28px; border: 2px solid var(--dk); border-radius: 8px;
+      background: var(--dk); position: relative; overflow: hidden
+    }
+    .pb i { position: absolute; inset: 0 auto 0 0; background: #c08cf0 }
+    .pb em {
+      position: relative; display: block; text-align: center;
+      color: #fff; font: 600 12px/24px system-ui
+    }
+    .jb {
+      background: linear-gradient(135deg,#1d2f6b,#3a1a8e); color: #fff;
+      border: 0; border-radius: 999px; padding: 12px 20px;
+      font: 700 14px inherit; cursor: pointer; white-space: nowrap
+    }
+    .jb:disabled { opacity: .65 }
+    .row { display: flex; justify-content: space-between; gap: 8px; color: var(--mu); font-size: 14px; margin: 4px 0 }
+    .btn {
+      width: 100%; border: 0; background: var(--ac); color: #fff;
+      padding: 11px; border-radius: 10px; font: 700 15px inherit; cursor: pointer; margin-top: 6px
+    }
+    .btn:disabled { opacity: .5 }
+    .btn.g { background: none; color: var(--mu); border: 1px solid var(--bd) }
+    .btn.s { width: auto; padding: 7px 12px; font-size: 13px; margin: 6px 6px 0 0 }
+    .btn.grn { background: #16a34a }
+    .lnk {
+      background: none; border: 0; color: var(--ac);
+      font: 600 14px inherit; cursor: pointer; margin-top: 8px; width: 100%
+    }
+    dialog {
+      border: 0; border-radius: 18px; padding: 20px; background: #fff;
+      color: var(--ink); width: min(440px,92vw); max-height: 90vh; overflow-y: auto
+    }
+    dialog::backdrop { background: #000a }
+    label { display: block; font-size: 14px; margin: 10px 0 4px; color: var(--mu) }
+    input, select {
+      width: 100%; padding: 10px; border: 1px solid var(--bd);
+      border-radius: 10px; background: #faf7fd; color: var(--ink); font: inherit
+    }
+    .chk { display: flex; gap: 8px; font-size: 13px; margin: 12px 0; color: var(--mu) }
+    .chk input { width: auto }
+    .note { font-size: 13px; color: var(--mu) }
+    .err { color: #d33; min-height: 18px; font-size: 13px }
+    .foot { font-size: 13px; color: #e5d6f5 }
+    .foot a { color: #fff }
+    /* Room box with copy buttons */
+    .room {
+      background: #efe0fa; border-radius: 10px; padding: 8px 10px;
+      margin-top: 8px; font-size: 14px
+    }
+    .room-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0 }
+    .room-row span { flex: 1; word-break: break-all }
+    .cpbtn {
+      border: 0; background: #6a2aa8; color: #fff; border-radius: 6px;
+      padding: 4px 10px; font: 700 12px inherit; cursor: pointer; white-space: nowrap; flex: none
+    }
+    .cpbtn.ok { background: #16a34a }
+    /* Tab bar */
+    .tabbar {
+      position: fixed; bottom: 0; left: 0; right: 0; display: none;
+      background: #150a30; border-top: 1px solid #ffffff30;
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom,0px))
+    }
+    .tabbar button {
+      flex: 1; border: 0; background: none; color: #cbb6e6;
+      font: 600 12px inherit; padding: 6px; cursor: pointer
+    }
+    .tabbar button.on { color: #ffb347 }
+    #toast {
+      position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%);
+      background: #111; color: #fff; padding: 10px 16px; border-radius: 10px;
+      font-size: 14px; display: none; z-index: 99; max-width: 90vw
+    }
+    .grid2 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr }
+    /* Payment badges */
+    .bp { display: inline-block; padding: 2px 8px; border-radius: 999px; font: 700 12px inherit; margin-left: 4px }
+    .bp-pend { background: #fef3c7; color: #92400e }
+    .bp-ok   { background: #dcfce7; color: #166534 }
+    .bp-rej  { background: #fee2e2; color: #991b1b }
+    /* UPI box */
+    .upi-box {
+      background: #f0f7ff; border: 2px dashed #6a2aa8; border-radius: 14px;
+      padding: 14px; margin: 12px 0; text-align: center
+    }
+    .upi-id { font-size: 20px; font-weight: 800; color: #2a0f4d; letter-spacing: 1px; margin: 6px 0 }
+    .upi-amt { font-size: 28px; font-weight: 900; color: #16a34a; margin: 4px 0 }
+    .upi-apps { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0 4px }
+    .upi-apps a {
+      display: inline-block; background: #2a0f4d; color: #fff;
+      padding: 7px 14px; border-radius: 999px; font: 700 13px inherit; text-decoration: none
+    }
+    .pay-step { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; font-size: 14px; color: #333 }
+    .pay-step .num {
+      background: #6a2aa8; color: #fff; border-radius: 50%; width: 24px; height: 24px;
+      display: grid; place-items: center; font: 700 12px inherit; flex: none
+    }
+    @media(max-width:640px) {
+      nav { display: none }
+      .tabbar { display: flex }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🔥 FreeFire <span>Arena</span></div>
+  <div class="seg" id="plat">
+    <button data-p="mobile" class="on">📱 Mobile</button>
+    <button data-p="pc">💻 PC</button>
+  </div>
+  <button class="ubtn" id="ub">Log in</button>
+</header>
+
+<main>
+  <nav id="nav"></nav>
+  <section id="view"></section>
+  <p class="foot">Community-run platform. Entry fees go to the organiser. Not affiliated with Garena. <a href="privacy.html">Privacy</a></p>
+</main>
+
+<div class="tabbar" id="tabbar"></div>
+<div id="toast"></div>
+
+<!-- Auth dialog -->
+<dialog id="adlg">
+  <h3 id="at" style="margin:0"></h3>
+  <div id="an"><label>Display name</label><input id="aname" maxlength="20" autocomplete="nickname"></div>
+  <label>Email</label><input id="aem" type="email" autocomplete="email">
+  <label>Password (min 8 chars)</label><input id="apw" type="password">
+  <p class="err" id="aerr"></p>
+  <button class="btn" id="ag"></button>
+  <button class="btn g" id="gg">Continue with Google</button>
+  <button class="lnk" id="fp">Forgot password?</button>
+  <button class="lnk" id="asw"></button>
+  <button class="lnk" style="color:var(--mu)" onclick="adlg.close()">Continue browsing</button>
+</dialog>
+
+<!-- Join / Register dialog -->
+<dialog id="dlg">
+  <h3 id="dt" style="margin:0 0 4px"></h3>
+
+  <!-- UPI payment section — shown only when entry fee > 0 -->
+  <div id="pay-section" style="display:none">
+    <div class="upi-box">
+      <p style="margin:0 0 4px;font-size:13px;color:#555">💳 Pay entry fee to join</p>
+      <div class="upi-amt" id="pay-amt"></div>
+      <div class="upi-id">9699668306@upi</div>
+      <p style="font-size:12px;color:#888;margin:2px 0">PhonePe · GPay · Paytm · Any UPI App</p>
+      <div class="upi-apps">
+        <a id="lnk-phonepe" href="#">📱 PhonePe</a>
+        <a id="lnk-gpay"    href="#">💚 GPay</a>
+        <a id="lnk-paytm"   href="#">🔵 Paytm</a>
+        <a id="lnk-upi"     href="#">🔗 UPI</a>
+      </div>
+    </div>
+    <div class="pay-step"><div class="num">1</div><span>Pay <b id="step-amt"></b> to <b>9699668306@upi</b> using any UPI app</span></div>
+    <div class="pay-step"><div class="num">2</div><span>Copy the <b>UTR / Transaction ID</b> from your UPI app after payment</span></div>
+    <div class="pay-step"><div class="num">3</div><span>Paste it below — admin will verify within a few minutes</span></div>
+    <label>UTR / Transaction ID <span style="color:#d33">*</span></label>
+    <input id="utr" placeholder="12-digit UTR or transaction ID" maxlength="40">
+    <label>Amount Paid (₹) <span style="color:#d33">*</span></label>
+    <input id="paid-amt" type="number" placeholder="Exact amount you paid" min="1">
+  </div>
+
+  <label>In-game name</label><input id="ign" maxlength="20">
+  <label>Player UID</label><input id="gid" inputmode="numeric" maxlength="12">
+  <label>WhatsApp / Phone (for match updates)</label><input id="ct" maxlength="40">
+  <div class="chk">
+    <input type="checkbox" id="ok">
+    <span>I agree to fair-play rules. Entry fees are non-refundable once a match starts.</span>
+  </div>
+  <p class="err" id="err"></p>
+  <button class="btn" id="go">Confirm registration</button>
+  <button class="btn g" onclick="dlg.close()">Cancel</button>
+</dialog>
+
+<!-- View match dialog -->
+<dialog id="vd">
+  <div id="vb"></div>
+  <button class="btn g" style="margin-top:10px" onclick="vd.close()">Close</button>
+</dialog>
+
+<!-- Admin: payment verification dialog -->
+<dialog id="pvd">
+  <h3 style="margin:0 0 12px">💰 Pending Payments</h3>
+  <div id="pvb"></div>
+  <button class="btn g" style="margin-top:12px" onclick="pvd.close()">Close</button>
+</dialog>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, sendEmailVerification,
+         updateProfile, signOut, deleteUser }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, deleteDoc,
+         updateDoc, query, where, orderBy, onSnapshot, writeBatch, increment, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, onMessage, isSupported }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+import { firebaseConfig, vapidKey } from "./config.js";
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+const toast = (m, ms = 3500) => {
+  const t = $("toast"); t.textContent = m; t.style.display = "block";
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.style.display = "none", ms);
+};
+
+const authMsg = x => ({
+  "auth/invalid-credential":    "Wrong email or password.",
+  "auth/email-already-in-use":  "Account exists. Please log in.",
+  "auth/weak-password":         "Password is too weak.",
+  "auth/invalid-email":         "Enter a valid email.",
+  "auth/too-many-requests":     "Too many tries. Wait a bit."
+}[x.code] || x.code || "Something went wrong.");
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = "✓ Copied"; btn.classList.add("ok");
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("ok"); }, 1800);
+  }).catch(() => toast("Could not copy — long-press to copy manually"));
+}
+
+function roomBox(roomId, password) {
+  return `<div class="room">
+    <div class="room-row">
+      <span>Room ID: <b>${esc(roomId)}</b></span>
+      <button class="cpbtn" data-copy="${esc(roomId)}">Copy</button>
+    </div>
+    <div class="room-row">
+      <span>Password: <b>${esc(password)}</b></span>
+      <button class="cpbtn" data-copy="${esc(password)}">Copy</button>
+    </div>
+  </div>`;
+}
+
+function payBadge(status) {
+  if (!status || status === "pending") return `<span class="bp bp-pend">⏳ Pending</span>`;
+  if (status === "approved")           return `<span class="bp bp-ok">✅ Paid</span>`;
+  if (status === "rejected")           return `<span class="bp bp-rej">❌ Rejected</span>`;
+  return "";
+}
+
+// ── Firebase init ─────────────────────────────────────────────────────────────
+const ready = !firebaseConfig.apiKey.startsWith("YOUR");
+let app, auth, db;
+if (ready) {
+  app  = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db   = getFirestore(app);
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const UPI_ID   = "9699668306@upi";
+const UPI_NAME = "FireArena";
+const ST = [["ongoing","Ongoing"],["upcoming","Upcoming"],["result","Result"]];
+
+let status = "upcoming", plat = "mobile", tab = "t";
+let user = null, admin = false;
+let tours = [], mine = {}, rooms = {}, cur = null;
+let amode = "in", pl = null;
+let unsubs = [], seen = {}, watchSig = "", fm = null;
+
+// ── UPI deep links ────────────────────────────────────────────────────────────
+function setUpiLinks(amount, note) {
+  const e = encodeURIComponent;
+  const base = `pa=${e(UPI_ID)}&pn=${e(UPI_NAME)}&am=${amount}&cu=INR&tn=${e(note)}`;
+  $("lnk-phonepe").href = `phonepe://pay?${base}`;
+  $("lnk-gpay").href    = `tez://upi/pay?${base}`;
+  $("lnk-paytm").href   = `paytmmp://pay?${base}`;
+  $("lnk-upi").href     = `upi://pay?${base}`;
+}
+
+// ── Card HTML ─────────────────────────────────────────────────────────────────
+function card(t) {
+  const reg = mine[t.id], full = t.filled >= t.cap, s = t.status || "upcoming";
+  const fee = t.entryFee || 0;
+  let btn;
+  if (s === "result")  btn = `<button class="jb" data-view="${t.id}">View result</button>`;
+  else if (s === "ongoing") btn = `<button class="jb" data-view="${t.id}">${reg ? "Room details" : "Live"}</button>`;
+  else btn = `<button class="jb" data-reg="${t.id}" ${reg || full ? "disabled" : ""}>${reg ? "✓ Joined" : full ? "Match Full" : "Join"}</button>`;
+  const feeHtml = fee > 0 ? `<b style="color:#d33">₹${fee}</b>` : `<b class="fr">FREE</b>`;
+  return `<div class="mc">
+    <div class="mh">
+      <div class="ic">🔥</div>
+      <div class="mt"><b>${esc(t.name)}</b><small>${esc(t.date)}</small></div>
+      <a href="#" data-view="${t.id}">view</a>
+    </div>
+    <div class="chips">
+      <div><span>🏆 Prize pool</span><b>👑 ${esc(t.prize)}</b></div>
+      <div><span>🛡 Per kill</span><b>${esc(t.perKill||"—")}</b></div>
+      <div><span>🎟 Entry fee</span>${feeHtml}</div>
+      <div><span>Type</span><b>${esc(t.type||"—")}</b></div>
+      <div><span>Version</span><b>${esc(t.version||"—")}</b></div>
+      <div><span>Map</span><b>${esc(t.map||"—")}</b></div>
+    </div>
+    <div class="mf">
+      <div class="pb"><i style="width:${Math.min(100,t.filled/t.cap*100)}%"></i><em>${t.filled}/${t.cap}</em></div>
+      ${btn}
+    </div>
+  </div>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  $("ub").textContent = user ? "👤 " + (user.displayName || user.email.split("@")[0]) : "Log in";
+  document.querySelectorAll("#plat button").forEach(b => b.classList.toggle("on", b.dataset.p === plat));
+
+  const tabs = [["t","🏆","Matches"],["r","📋","My Entries"],["a","👤","Account"],
+                ...(admin ? [["m","🛠","Admin"]] : [])];
+  $("nav").innerHTML    = tabs.map(x => `<button class="${tab===x[0]?"on":""}" data-t="${x[0]}">${x[1]} ${x[2]}</button>`).join("");
+  $("tabbar").innerHTML = tabs.map(x => `<button class="${tab===x[0]?"on":""}" data-t="${x[0]}">${x[1]}<br>${x[2]}</button>`).join("");
+
+  let h = "";
+
+  if (!ready) {
+    h = `<div class="card"><h3>Setup needed</h3><p>Add your Firebase config in <code>config.js</code>.</p></div>`;
+
+  } else if (tab === "t") {
+    const list = tours.filter(t => t.platform === plat && (t.status||"upcoming") === status);
+    h = `<div class="sbar"><div class="seg">${ST.map(x =>
+      `<button class="${status===x[0]?"on":""}" data-s="${x[0]}">${x[1]}</button>`).join("")}</div></div>` +
+      (list.length
+        ? `<div class="grid">${list.map(card).join("")}</div>`
+        : `<div class="card">No ${status} ${plat==="pc"?"PC":"mobile"} matches right now. Check back soon!</div>`);
+
+  } else if (tab === "r") {
+    if (!user) {
+      h = `<div class="card"><p>Log in to see your entries.</p><button class="btn" data-login>Log in</button></div>`;
+    } else {
+      const list = tours.filter(t => mine[t.id]);
+      if (!list.length) {
+        h = `<div class="card">No registrations yet.</div>`;
+      } else {
+        h = `<div class="grid">${list.map(t => {
+          const reg = mine[t.id], r = rooms[t.id];
+          const fee = t.entryFee || 0;
+          const ps  = reg.payStatus || (fee > 0 ? "pending" : "free");
+          const payRow = fee > 0
+            ? `<div class="row">Entry fee: <b>₹${fee}</b>${payBadge(ps)}</div>
+               ${reg.utr ? `<div class="row" style="font-size:12px;color:#888">UTR: ${esc(reg.utr)}</div>` : ""}
+               ${ps==="rejected" ? `<p style="color:#d33;font-size:13px">❌ Payment rejected — please cancel and re-join with the correct UTR.</p>` : ""}`
+            : "";
+          const roomSection = r ? roomBox(r.roomId, r.password)
+            : `<p class="note">Room ID & password appear here before the match.</p>`;
+          const cancelBtn = (t.status||"upcoming") === "upcoming"
+            ? `<button class="btn g s" data-cancel="${t.id}">Cancel entry</button>` : "";
+          return `<div class="card">
+            <h3>${esc(t.name)}</h3>
+            <div class="row">${esc(t.date)}</div>
+            <div class="row">IGN: ${esc(reg.ign)} · UID ${esc(reg.gid)}</div>
+            ${payRow}${roomSection}${cancelBtn}
+          </div>`;
+        }).join("")}</div>`;
+      }
+    }
+
+  } else if (tab === "a") {
+    h = user
+      ? `<div class="card">
+           <h3>${esc(user.displayName||"Player")}</h3>
+           <p class="note">${esc(user.email)} · ${user.emailVerified ? "✅ verified" : "⚠️ not verified"}</p>
+           ${user.emailVerified ? "" : `<button class="btn s" data-verify>Resend verification email</button>`}
+           <button class="btn s" data-notif>${"Notification" in window && Notification.permission==="granted" ? "🔔 Alerts: ON" : "🔔 Enable room alerts"}</button>
+           <button class="btn g s" data-out>Log out</button>
+           <button class="btn g s" data-del style="color:#d33">Delete account</button>
+         </div>`
+      : `<div class="card"><button class="btn" data-login>Log in / Sign up</button></div>`;
+    h += `<div class="card" style="margin-top:14px">
+            <h3>Fair play</h3>
+            <p class="note">Entry fees are non-refundable once a match starts. Rewards are sponsor-funded. No hacks, scripts or teaming — cheaters are banned. Admin decisions are final.</p>
+          </div>`;
+
+  } else if (tab === "m" && admin) {
+    const opt = arr => arr.map(x => `<option>${x}</option>`).join("");
+    h = `<div class="card">
+      <h3>New match</h3>
+      <label>Title</label><input id="n_name" placeholder="SOLO - PER KILL + TOP PRIZE #1001">
+      <div class="grid2">
+        <div><label>Platform</label><select id="n_plat"><option value="mobile">Mobile</option><option value="pc">PC</option></select></div>
+        <div><label>Slots</label><input id="n_cap" type="number" value="48"></div>
+        <div><label>Type</label><select id="n_type">${opt(["Solo","Duo","Squad","Clash Squad"])}</select></div>
+        <div><label>Version</label><select id="n_ver">${opt(["TPP","FPP"])}</select></div>
+        <div><label>Map</label><select id="n_map">${opt(["Bermuda","Purgatory","Kalahari","Alpine","Nexterra"])}</select></div>
+        <div><label>Date &amp; time</label><input id="n_date" placeholder="2026-11-14 07:00 PM"></div>
+        <div><label>Prize pool</label><input id="n_prize" placeholder="₹380"></div>
+        <div><label>Per kill reward</label><input id="n_pk" placeholder="₹4"></div>
+        <div style="grid-column:1/-1"><label>Entry fee ₹ (0 = FREE)</label><input id="n_fee" type="number" value="0" min="0"></div>
+      </div>
+      <button class="btn" data-new>Create</button>
+    </div>
+    <div class="grid" style="margin-top:14px">
+      ${tours.map(t => `<div class="card">
+        <h3>${esc(t.name)}</h3>
+        <div class="row">${t.platform} · ${t.status||"upcoming"} · ${t.filled}/${t.cap} · ${t.entryFee ? "₹"+t.entryFee : "FREE"}</div>
+        <button class="btn s"   data-room="${t.id}">Set room</button>
+        <button class="btn g s" data-players="${t.id}">Players</button>
+        <button class="btn s grn" data-payments="${t.id}">💰 Payments</button>
+        <button class="btn g s" data-go="${t.id}">Start</button>
+        <button class="btn g s" data-fin="${t.id}">Finish</button>
+        <button class="btn g s" data-rm="${t.id}">Delete</button>
+      </div>`).join("")}
+    </div>`;
+    if (pl) {
+      h += `<div class="card" style="margin-top:14px">
+        <h3>Players (${pl.length})</h3>
+        ${pl.map(r => `<div class="row"><span>${esc(r.ign)} · ${esc(r.gid)}</span><span>${esc(r.contact||"")}</span></div>`).join("")}
+      </div>`;
+    }
+  }
+
+  $("view").innerHTML = h;
+}
+
+// ── Show match detail dialog ──────────────────────────────────────────────────
+function showView(id) {
+  const t = tours.find(x => x.id === id); if (!t) return;
+  const r = rooms[id], reg = mine[id];
+  const fee = t.entryFee || 0;
+  $("vb").innerHTML = `
+    <h3 style="margin:0">${esc(t.name)}</h3>
+    <p class="note">${esc(t.date)} · ${t.platform==="pc"?"PC":"Mobile"} · ${esc(t.type||"")} · ${esc(t.version||"")} · ${esc(t.map||"")}</p>
+    <p>🏆 Prize pool: <b>${esc(t.prize)}</b><br>
+       🛡 Per kill: <b>${esc(t.perKill||"—")}</b><br>
+       🎟 Entry: ${fee>0 ? `<b style="color:#d33">₹${fee}</b>` : `<b style="color:#16a34a">FREE</b>`}</p>
+    ${t.status==="result" ? `<div class="room"><b>Results</b><br>${esc(t.results||"Coming soon").replace(/\n/g,"<br>")}</div>` : ""}
+    ${reg && r ? roomBox(r.roomId, r.password) : reg ? `<p class="note">Room ID and password will appear here before the match.</p>` : ""}
+    <h4>Rules</h4>
+    <ul class="note">
+      <li>Join 5 minutes before start.</li>
+      <li>Use the same IGN and UID you registered with.</li>
+      <li>No hacks, scripts, teaming or stream-sniping.</li>
+      <li>Mobile and PC matches are separate. Emulators only in PC.</li>
+      <li>Entry fees are non-refundable once a match starts.</li>
+      <li>Admin decisions are final.</li>
+    </ul>`;
+  $("vd").showModal();
+}
+
+// ── Auth dialog ───────────────────────────────────────────────────────────────
+function showAuth(m) {
+  amode = m || amode;
+  const isIn = amode === "in";
+  $("at").textContent  = isIn ? "Welcome back" : "Create your account";
+  $("an").style.display = isIn ? "none" : "block";
+  $("ag").textContent  = isIn ? "Log in" : "Sign up";
+  $("asw").textContent = isIn ? "New here? Create an account" : "Already registered? Log in";
+  $("apw").autocomplete = isIn ? "current-password" : "new-password";
+  $("aerr").textContent = "";
+  $("adlg").showModal();
+}
+
+// ── Load user registrations + live room listener ──────────────────────────────
+async function loadMine() {
+  mine = {}; rooms = {};
+  if (!user) return;
+  const snap = await getDocs(query(collection(db,"registrations"), where("uid","==",user.uid)));
+  for (const d of snap.docs) {
+    const r = d.data(); mine[r.tid] = r;
+    try {
+      const x = await getDoc(doc(db,"tournaments",r.tid,"private","room"));
+      if (x.exists()) rooms[r.tid] = x.data();
+    } catch (_) {}
+  }
+  watchRooms();
+}
+
+function watchRooms() {
+  const sig = Object.keys(mine).sort().join(",");
+  if (sig === watchSig) return;
+  watchSig = sig; unsubs.forEach(u => u()); unsubs = [];
+  Object.keys(mine).forEach(tid => {
+    unsubs.push(onSnapshot(doc(db,"tournaments",tid,"private","room"), snap => {
+      const key = snap.exists() ? snap.data().roomId + "|" + snap.data().password : "";
+      if (snap.exists()) rooms[tid] = snap.data();
+      if (key && seen[tid] !== undefined && key !== seen[tid]) {
+        const t = tours.find(x => x.id === tid), rd = rooms[tid];
+        toast(`🔥 ${t ? t.name : "Match"} — Room ID: ${rd.roomId} · Password: ${rd.password}`, 10000);
+        if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+          navigator.serviceWorker.ready.then(sw =>
+            sw.showNotification("🔥 Room ID ready",
+              { body: `Room ID: ${rd.roomId} · Password: ${rd.password}`, icon: "icon-192.png" })
+          ).catch(() => {});
+        }
+      }
+      seen[tid] = key; render();
+    }, () => {}));
+  });
+}
+
+// ── Push notifications ────────────────────────────────────────────────────────
+const fmReady = ready
+  ? isSupported().then(ok => {
+      if (ok) {
+        fm = getMessaging(app);
+        onMessage(fm, p => { const d = p.data||{}; toast((d.title||"Update")+" "+(d.body||""), 10000); });
+      }
+    }).catch(() => {})
+  : Promise.resolve();
+
+async function saveToken() {
+  await fmReady; if (!fm || !user || vapidKey.startsWith("YOUR")) return;
+  const reg = await navigator.serviceWorker.ready;
+  const token = await getToken(fm, { vapidKey, serviceWorkerRegistration: reg });
+  await setDoc(doc(db,"fcmTokens",user.uid), { token, updatedAt: serverTimestamp() });
+}
+
+async function enableNotifs() {
+  try {
+    await fmReady; if (!fm) return toast("Notifications not supported on this browser.");
+    if (vapidKey.startsWith("YOUR")) return toast("Add your vapidKey in config.js");
+    const p = await Notification.requestPermission();
+    if (p !== "granted") return toast("Notifications blocked — allow them in browser settings.");
+    await saveToken(); toast("🔔 Room alerts enabled!"); render();
+  } catch (x) { toast("Could not enable: " + (x.code||x.message)); }
+}
+
+// ── Admin: payments panel ─────────────────────────────────────────────────────
+async function showPayments(tid) {
+  const t = tours.find(x => x.id === tid);
+  const snap = await getDocs(query(
+    collection(db,"registrations"), where("tid","==",tid), where("payStatus","==","pending")));
+  if (snap.empty) { toast("No pending payments for this match."); return; }
+  $("pvb").innerHTML = `<h4 style="margin:0 0 10px">Pending: ${snap.size} — ${esc(t ? t.name : tid)}</h4>` +
+    snap.docs.map(d => {
+      const r = d.data();
+      return `<div style="border:1px solid #e6dcef;border-radius:10px;padding:10px;margin-bottom:10px">
+        <b>${esc(r.ign)}</b> · UID ${esc(r.gid)}<br>
+        <span style="font-size:13px;color:#555">UTR: <b>${esc(r.utr||"—")}</b> · Paid: ₹${esc(r.paidAmt||"?")}</span><br>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn grn s" data-approve="${d.id}" data-tid="${tid}">✅ Approve</button>
+          <button class="btn s" style="background:#d33" data-reject="${d.id}" data-tid="${tid}">❌ Reject</button>
+        </div>
+      </div>`;
+    }).join("");
+  $("pvd").showModal();
+}
+
+// ── Firebase listeners ────────────────────────────────────────────────────────
+if (ready) {
+  onSnapshot(
+    query(collection(db,"tournaments"), orderBy("createdAt","desc")),
+    s => { tours = s.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+    () => toast("Could not load tournaments")
+  );
+  onAuthStateChanged(auth, async u => {
+    user = u; admin = false;
+    if (u) { try { admin = (await getDoc(doc(db,"admins",u.uid))).exists(); } catch (_) {} }
+    try { await loadMine(); } catch (_) {}
+    render();
+    if (u && "Notification" in window && Notification.permission === "granted") saveToken().catch(() => {});
+  });
+}
+
+// ── Auth button handlers ──────────────────────────────────────────────────────
+$("ag").onclick = async () => {
+  const n = $("aname").value.trim(), e = $("aem").value.trim(), p = $("apw").value, er = $("aerr");
+  if (!/^\S+@\S+\.\S+$/.test(e)) return (er.textContent = "Enter a valid email.");
+  if (p.length < 8) return (er.textContent = "Password must be at least 8 characters.");
+  try {
+    if (amode === "up") {
+      if (!n) return (er.textContent = "Enter a display name.");
+      const c = await createUserWithEmailAndPassword(auth, e, p);
+      await updateProfile(c.user, { displayName: n });
+      await sendEmailVerification(c.user);
+      toast("Verification email sent. Verify then register.");
+    } else {
+      await signInWithEmailAndPassword(auth, e, p);
+    }
+    $("adlg").close(); $("apw").value = ""; user = auth.currentUser; render();
+  } catch (x) { er.textContent = authMsg(x); }
+};
+
+$("gg").onclick  = async () => { try { await signInWithPopup(auth, new GoogleAuthProvider()); $("adlg").close(); } catch (x) { $("aerr").textContent = authMsg(x); } };
+$("fp").onclick  = async () => { const e=$("aem").value.trim(); if(!e) return ($("aerr").textContent="Enter your email first."); try { await sendPasswordResetEmail(auth,e); $("aerr").textContent="Reset link sent. Check your inbox."; } catch(x){$("aerr").textContent=authMsg(x);} };
+$("asw").onclick = () => showAuth(amode === "in" ? "up" : "in");
+$("ub").onclick  = () => user ? (tab = "a", render()) : showAuth("in");
+
+// ── Register button ───────────────────────────────────────────────────────────
+$("go").onclick = async () => {
+  const ign = $("ign").value.trim(), gid = $("gid").value.trim(), ct = $("ct").value.trim();
+  if (!ign || !/^\d{6,12}$/.test(gid) || !ct)
+    return ($("err").textContent = "Enter IGN, a valid UID (6–12 digits) and contact.");
+  if (!$("ok").checked)
+    return ($("err").textContent = "Please accept the rules.");
+  const fee = cur.entryFee || 0;
+  let utr = "", paidAmt = 0, payStatus = "free";
+  if (fee > 0) {
+    utr = $("utr").value.trim();
+    paidAmt = parseFloat($("paid-amt").value) || 0;
+    if (!utr)      return ($("err").textContent = "Enter your UTR / Transaction ID.");
+    if (utr.length < 6) return ($("err").textContent = "UTR seems too short — check again.");
+    if (paidAmt <= 0)   return ($("err").textContent = "Enter the exact amount you paid.");
+    payStatus = "pending";
+  }
+  try {
+    const batch = writeBatch(db);
+    const data = {
+      tid: cur.id, uid: user.uid, ign, gid, contact: ct,
+      platform: cur.platform, createdAt: serverTimestamp(),
+      entryFee: fee, payStatus, utr, paidAmt
+    };
+    batch.set(doc(db,"registrations",cur.id+"_"+user.uid), data);
+    batch.update(doc(db,"tournaments",cur.id), { filled: increment(1) });
+    await batch.commit();
+    mine[cur.id] = data; $("dlg").close();
+    toast(fee > 0 ? "Registered! 🔥 Admin will verify your payment shortly." : "Registered! 🔥");
+    try { await loadMine(); } catch (_) {}
+    render();
+    if ("Notification" in window && Notification.permission === "default" &&
+        confirm("Get Room ID & password alerts for this match?")) enableNotifs();
+  } catch (_) { $("err").textContent = "Could not register (match full or already registered)."; }
+};
+
+// ── Global click handler ──────────────────────────────────────────────────────
+document.addEventListener("click", async e => {
+  const closest = s => e.target.closest(s);
+  const data    = k => closest(`[data-${k}]`)?.dataset[k];
+
+  // Copy buttons inside room boxes
+  if (closest("[data-copy]")) {
+    copyText(data("copy"), closest("[data-copy]")); return;
+  }
+
+  if (closest("[data-t]")) {
+    tab = data("t"); pl = null;
+    if (tab === "r") { try { await loadMine(); } catch (_) {} }
+    render(); return;
+  }
+
+  if (closest("[data-s]")) { status = data("s"); render(); return; }
+
+  if (closest("[data-p]")) { plat = data("p"); tab = "t"; render(); return; }
+
+  if (closest("[data-view]")) {
+    e.preventDefault();
+    try { await loadMine(); } catch (_) {}
+    showView(data("view")); return;
+  }
+
+  if (closest("[data-login]"))  { showAuth("in"); return; }
+  if (closest("[data-notif]"))  { enableNotifs(); return; }
+
+  if (closest("[data-verify]")) {
+    await sendEmailVerification(user); toast("Verification email sent."); return;
+  }
+
+  if (closest("[data-out]")) { await signOut(auth); tab = "t"; return; }
+
+  if (closest("[data-del]") && confirm("Permanently delete your account and all registrations?")) {
+    try {
+      const s = await getDocs(query(collection(db,"registrations"), where("uid","==",user.uid)));
+      await Promise.all(s.docs.map(d => deleteDoc(d.ref)));
+      await deleteUser(auth.currentUser); tab = "t"; toast("Account deleted.");
+    } catch (x) {
+      toast(x.code === "auth/requires-recent-login"
+        ? "Log out, log back in, then delete." : authMsg(x));
+    }
+    return;
+  }
+
+  // Join button
+  if (data("reg")) {
+    if (!user) return showAuth("in");
+    await user.reload(); user = auth.currentUser;
+    if (!user.emailVerified) return toast("Please verify your email first (check your inbox).");
+    cur = tours.find(t => t.id === data("reg"));
+    $("dt").textContent = cur.name; $("err").textContent = "";
+    $("ign").value = $("ign").value || user.displayName || "";
+    $("utr").value = ""; $("paid-amt").value = "";
+    const fee = cur.entryFee || 0;
+    if (fee > 0) {
+      $("pay-section").style.display = "block";
+      $("pay-amt").textContent  = "₹" + fee;
+      $("step-amt").textContent = "₹" + fee;
+      setUpiLinks(fee, "FireArena-" + cur.id.slice(-6));
+    } else {
+      $("pay-section").style.display = "none";
+    }
+    $("dlg").showModal(); return;
+  }
+
+  if (closest("[data-cancel]")) {
+    const id = data("cancel");
+    if (!confirm("Cancel your entry?")) return;
+    const t = tours.find(x => x.id === id);
+    if ((t?.entryFee || 0) > 0 && !confirm("⚠️ Entry fees are non-refundable. Cancel anyway?")) return;
+    await deleteDoc(doc(db,"registrations",id+"_"+user.uid));
+    await updateDoc(doc(db,"tournaments",id), { filled: increment(-1) });
+    delete mine[id]; render(); return;
+  }
+
+  // Admin actions
+  if (closest("[data-new]")) {
+    const v = id => $(id).value.trim(), cap = +v("n_cap"), fee = parseFloat($("n_fee").value) || 0;
+    if (!v("n_name") || !cap) return toast("Fill title and slots.");
+    await addDoc(collection(db,"tournaments"), {
+      name: v("n_name"), platform: v("n_plat"), type: v("n_type"),
+      version: v("n_ver"), map: v("n_map"), date: v("n_date"),
+      prize: v("n_prize"), perKill: v("n_pk"),
+      cap, filled: 0, status: "upcoming", entryFee: fee, createdAt: serverTimestamp()
+    }); toast("Created."); return;
+  }
+
+  if (closest("[data-room]")) {
+    const r = prompt("Room ID?"); if (!r) return;
+    const p = prompt("Room password?") || "";
+    await setDoc(doc(db,"tournaments",data("room"),"private","room"), { roomId: r, password: p });
+    toast("Room saved. Players will be notified. 🔔", 6000); return;
+  }
+
+  if (closest("[data-players]")) {
+    const id = data("players");
+    const s = await getDocs(query(collection(db,"registrations"), where("tid","==",id)));
+    pl = s.docs.map(d => d.data()); render(); return;
+  }
+
+  if (closest("[data-payments]")) { await showPayments(data("payments")); return; }
+
+  if (closest("[data-approve]")) {
+    const regId = data("approve"), tid = data("tid");
+    await updateDoc(doc(db,"registrations",regId), { payStatus: "approved" });
+    toast("✅ Payment approved!"); if (tid) await showPayments(tid); return;
+  }
+
+  if (closest("[data-reject]")) {
+    const regId = data("reject"), tid = data("tid");
+    await updateDoc(doc(db,"registrations",regId), { payStatus: "rejected" });
+    if (tid) {
+      try { await updateDoc(doc(db,"tournaments",tid), { filled: increment(-1) }); } catch (_) {}
+      await showPayments(tid);
+    }
+    toast("❌ Payment rejected."); return;
+  }
+
+  if (closest("[data-go]")) {
+    await updateDoc(doc(db,"tournaments",data("go")), { status: "ongoing" });
+    toast("Match marked ongoing."); return;
+  }
+
+  if (closest("[data-fin]")) {
+    const r = prompt("Results (winners, one per line):"); if (r === null) return;
+    await updateDoc(doc(db,"tournaments",data("fin")), { status: "result", results: r });
+    toast("Result published."); return;
+  }
+
+  if (closest("[data-rm]") && confirm("Delete this tournament?")) {
+    await deleteDoc(doc(db,"tournaments",data("rm"))); return;
+  }
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+render();
+</script>
+</body>
+</html>
